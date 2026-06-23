@@ -48,12 +48,13 @@
     .avatar {
       width: 120px; height: 120px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #c4a076, #e8d5b7);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 3rem;
       margin: 0 auto 1.5rem;
       box-shadow: 0 0 60px rgba(196,160,118,0.15);
       animation: float 3s ease-in-out infinite;
+      overflow: hidden;
+      border: 3px solid rgba(196,160,118,0.3);
+      display: block;
+      object-fit: cover;
     }
     @keyframes float {
       0%, 100% { transform: translateY(0); }
@@ -237,7 +238,7 @@
     <div class="hero-bg-text">DISCORD</div>
 
     <div class="hero-content">
-      <div class="avatar">🎮</div>
+      <img class="avatar" src="https://cdn.discordapp.com/avatars/579358704789618747/3263780a55d96002abfcd17481e9abd4.png?size=256" alt="J.vps avatar">
       <div class="badge">⏰ 24/7 Online</div>
       <h1>J.<span>vps</span></h1>
       <p class="tagline">
@@ -250,6 +251,11 @@
         <div class="stat"><div class="num">47</div><div class="label">Servidores</div></div>
         <div class="stat"><div class="num">∞</div><div class="label">Mensajes/día</div></div>
         <div class="stat"><div class="num">0</div><div class="label">Toques pasto</div></div>
+      </div>
+      <div style="margin-top:1.5rem; display:flex; align-items:center; gap:0.75rem; justify-content:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:0.6rem 1.25rem;">
+        <span style="font-size:1.2rem;">🆔</span>
+        <span style="color:rgba(232,224,212,0.5); font-size:0.85rem;">Discord ID:</span>
+        <span style="color:#c4a076; font-weight:700; font-size:0.85rem;">579358704789618747</span>
       </div>
     </div>
     <div class="hero-arrow">↓</div>
