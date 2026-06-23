@@ -5,18 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>J.vps — Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
-      background: #0f0d0a;
-      color: #e8e0d4;
+      background: #0a0000;
+      color: #e8dcd4;
       line-height: 1.6;
       overflow-x: hidden;
     }
-    ::selection { background: #c4a076; color: #0f0d0a; }
+    ::selection { background: #dc2626; color: #000; }
 
+    /* ===== SCROLL BAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0000; }
+    ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+
+    /* ===== HERO ===== */
     .hero {
       min-height: 100vh;
       display: flex;
@@ -26,224 +33,384 @@
       text-align: center;
       padding: 2rem;
       position: relative;
-      background: linear-gradient(160deg, #1a1814 0%, #0f0d0a 50%, #1a1814 100%);
+      background: linear-gradient(160deg, #1a0505 0%, #0a0000 40%, #000 100%);
       overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(220,38,38,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(220,38,38,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 80%, rgba(220,38,38,0.04) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    /* Grid overlay */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(220,38,38,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220,38,38,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
     }
 
     .hero-bg-text {
       position: absolute;
       font-size: clamp(8rem, 25vw, 20rem);
       font-weight: 900;
-      color: rgba(255,255,255,0.02);
+      color: rgba(220,38,38,0.03);
       letter-spacing: -0.05em;
       user-select: none;
       pointer-events: none;
       line-height: 1;
+      font-family: 'JetBrains Mono', monospace;
     }
-    .hero-bg-text:nth-child(1) { top: -5%; right: -5%; }
-    .hero-bg-text:nth-child(2) { bottom: -10%; left: -5%; }
+    .hero-bg-text:nth-child(1) { top: -3%; right: -3%; }
+    .hero-bg-text:nth-child(2) { bottom: -8%; left: -3%; }
 
-    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+    .hero-content { position: relative; z-index: 2; max-width: 700px; }
+
+    .avatar-wrap {
+      position: relative;
+      width: 130px; height: 130px;
+      margin: 0 auto 1.5rem;
+    }
+    .avatar-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #dc2626, #ef4444, #dc2626, #7f1d1d);
+      background-size: 300% 300%;
+      animation: gradientRotate 4s ease infinite;
+      z-index: -1;
+    }
+    @keyframes gradientRotate {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
     .avatar {
-      width: 120px; height: 120px;
+      width: 130px; height: 130px;
       border-radius: 50%;
-      margin: 0 auto 1.5rem;
-      box-shadow: 0 0 60px rgba(196,160,118,0.15);
-      animation: float 3s ease-in-out infinite;
-      overflow: hidden;
-      border: 3px solid rgba(196,160,118,0.3);
       display: block;
       object-fit: cover;
+      border: 3px solid rgba(0,0,0,0.5);
+      animation: float 3s ease-in-out infinite;
     }
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-8px); }
     }
 
-    .badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.06);
+    .status-dot {
+      position: absolute;
+      bottom: 8px; right: 8px;
+      width: 22px; height: 22px;
+      background: #22c55e;
+      border-radius: 50%;
+      border: 3px solid #0a0000;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(220,38,38,0.1);
       backdrop-filter: blur(12px);
       padding: 0.4rem 1.2rem;
       border-radius: 100px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      letter-spacing: 0.05em;
-      color: rgba(232,224,212,0.6);
-      border: 1px solid rgba(255,255,255,0.08);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(232,220,212,0.6);
+      border: 1px solid rgba(220,38,38,0.15);
       margin-bottom: 1rem;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .hero h1 {
-      font-size: clamp(2.5rem, 7vw, 5rem);
+      font-size: clamp(2.8rem, 7vw, 5rem);
       font-weight: 900;
       letter-spacing: -0.03em;
       color: #fff;
       margin-bottom: 0.5rem;
     }
-    .hero h1 span { color: #c4a076; }
-    .hero .tagline {
-      font-size: 1.1rem;
-      color: rgba(232,224,212,0.5);
-      margin-bottom: 2rem;
-      font-weight: 300;
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, #dc2626, #ef4444, #f87171);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .hero .tagline strong { color: rgba(232,224,212,0.8); font-weight: 600; }
+
+    .tagline {
+      font-size: 1.05rem;
+      color: rgba(232,220,212,0.45);
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .tagline strong { color: rgba(232,220,212,0.7); font-weight: 600; }
 
     .stats {
-      display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
-      margin-bottom: 2rem;
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
     }
     .stat {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 0.75rem 1.25rem;
+      background: rgba(220,38,38,0.05);
+      border: 1px solid rgba(220,38,38,0.1);
+      border-radius: 10px;
+      padding: 0.6rem 1.1rem;
       text-align: center;
-      min-width: 100px;
+      min-width: 90px;
     }
-    .stat .num { font-size: 1.5rem; font-weight: 800; color: #c4a076; }
-    .stat .label { font-size: 0.7rem; color: rgba(232,224,212,0.4); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat .num {
+      font-size: 1.4rem; font-weight: 800;
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat .label { font-size: 0.65rem; color: rgba(232,220,212,0.35); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.1rem; }
+
+    .discord-id {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(220,38,38,0.06);
+      border: 1px solid rgba(220,38,38,0.12);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: rgba(232,220,212,0.4);
+    }
+    .discord-id code {
+      color: #dc2626;
+      font-weight: 600;
+      background: rgba(220,38,38,0.1);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
 
     .hero-arrow {
       position: absolute; bottom: 2rem;
       animation: bounce 2s infinite;
-      font-size: 1.2rem; opacity: 0.3;
+      color: rgba(220,38,38,0.3); font-size: 0.7rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
     }
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(10px); }
     }
 
-    section { padding: 5rem 2rem; max-width: 900px; margin: 0 auto; }
-    .section-title {
-      font-size: 1.8rem; font-weight: 800; color: #fff;
-      margin-bottom: 2rem; letter-spacing: -0.02em;
-      display: flex; align-items: center; gap: 0.75rem;
-    }
-    .section-title .emoji { font-size: 1.4rem; }
+    /* ===== SECTIONS ===== */
+    section { padding: 5rem 2rem; max-width: 1000px; margin: 0 auto; }
 
-    .skills {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;
+    .section-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .section-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(220,38,38,0.2), transparent);
+    }
+    .section-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.15em; color: #dc2626;
+      white-space: nowrap;
+    }
+    .section-title {
+      font-size: 1.6rem; font-weight: 800; color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    /* ===== SKILLS ===== */
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;
     }
     .skill-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px; padding: 1.5rem;
+      background: rgba(220,38,38,0.02);
+      border: 1px solid rgba(220,38,38,0.06);
+      border-radius: 12px; padding: 1.5rem;
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, #dc2626, transparent);
+      opacity: 0; transition: opacity 0.3s;
     }
     .skill-card:hover {
       transform: translateY(-4px);
-      border-color: rgba(196,160,118,0.2);
-      background: rgba(255,255,255,0.05);
+      border-color: rgba(220,38,38,0.15);
+      background: rgba(220,38,38,0.04);
     }
-    .skill-card .icon { font-size: 2rem; margin-bottom: 0.75rem; }
-    .skill-card h3 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
-    .skill-card p { font-size: 0.85rem; color: rgba(232,224,212,0.5); }
+    .skill-card:hover::before { opacity: 1; }
+    .skill-card .icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+    .skill-card h3 { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
+    .skill-card p { font-size: 0.82rem; color: rgba(232,220,212,0.45); line-height: 1.6; }
 
-    .xp-list { display: flex; flex-direction: column; gap: 1rem; }
+    /* ===== XP ===== */
+    .xp-list { display: flex; flex-direction: column; gap: 0.75rem; }
     .xp-item {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px; padding: 1.5rem;
+      background: rgba(220,38,38,0.02);
+      border: 1px solid rgba(220,38,38,0.06);
+      border-radius: 10px; padding: 1.25rem;
       display: flex; gap: 1rem; align-items: flex-start;
+      transition: all 0.3s ease;
     }
-    .xp-item .year { 
-      font-size: 0.75rem; font-weight: 700; color: #c4a076;
-      white-space: nowrap; text-transform: uppercase; letter-spacing: 0.05em;
-      min-width: 80px;
+    .xp-item:hover {
+      border-color: rgba(220,38,38,0.12);
+      background: rgba(220,38,38,0.03);
     }
-    .xp-item h3 { font-size: 1rem; font-weight: 700; color: #fff; }
-    .xp-item p { font-size: 0.85rem; color: rgba(232,224,212,0.5); }
+    .xp-item .year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 700; color: #dc2626;
+      white-space: nowrap; text-transform: uppercase; letter-spacing: 0.03em;
+      min-width: 85px; padding-top: 0.1rem;
+    }
+    .xp-item h3 { font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .xp-item p { font-size: 0.82rem; color: rgba(232,220,212,0.45); margin-top: 0.15rem; }
 
-    .projects {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;
+    /* ===== PROJECTS ===== */
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;
     }
     .project {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px; padding: 1.5rem;
+      background: rgba(220,38,38,0.02);
+      border: 1px solid rgba(220,38,38,0.06);
+      border-radius: 12px; padding: 1.5rem;
       transition: all 0.3s ease;
     }
     .project:hover {
       transform: translateY(-4px);
-      border-color: rgba(196,160,118,0.2);
+      border-color: rgba(220,38,38,0.15);
+      background: rgba(220,38,38,0.04);
     }
-    .project .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
-    .project h3 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
-    .project p { font-size: 0.85rem; color: rgba(232,224,212,0.5); }
+    .project .icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .project h3 { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
+    .project p { font-size: 0.82rem; color: rgba(232,220,212,0.45); }
     .project .tech { margin-top: 0.75rem; display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .project .tech span {
-      font-size: 0.65rem; padding: 0.2rem 0.6rem;
-      background: rgba(196,160,118,0.1);
-      border: 1px solid rgba(196,160,118,0.15);
-      border-radius: 100px; color: #c4a076; font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; padding: 0.2rem 0.6rem;
+      background: rgba(220,38,38,0.08);
+      border: 1px solid rgba(220,38,38,0.1);
+      border-radius: 100px; color: #ef4444; font-weight: 600;
     }
 
-    .demos {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;
+    /* ===== DEMOS ===== */
+    .demos-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;
     }
     .demo-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px; padding: 1.5rem; text-align: center;
+      background: rgba(220,38,38,0.02);
+      border: 1px solid rgba(220,38,38,0.06);
+      border-radius: 12px; padding: 1.5rem; text-align: center;
       transition: all 0.3s ease;
       text-decoration: none; color: inherit;
+      position: relative; overflow: hidden;
+    }
+    .demo-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #dc2626, transparent);
+      opacity: 0; transition: opacity 0.3s;
     }
     .demo-card:hover {
       transform: translateY(-4px);
-      border-color: #c4a076;
-      background: rgba(196,160,118,0.05);
+      border-color: rgba(220,38,38,0.15);
+      background: rgba(220,38,38,0.04);
     }
-    .demo-card .preview { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .demo-card h3 { font-size: 0.95rem; font-weight: 700; color: #fff; }
-    .demo-card p { font-size: 0.8rem; color: rgba(232,224,212,0.4); }
+    .demo-card:hover::before { opacity: 1; }
+    .demo-card .preview { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .demo-card h3 { font-size: 0.9rem; font-weight: 700; color: #fff; }
+    .demo-card p { font-size: 0.75rem; color: rgba(232,220,212,0.35); margin-top: 0.2rem; }
 
+    /* ===== QUOTE ===== */
+    .quote-section {
+      text-align: center; padding: 4rem 2rem;
+    }
     .quote {
-      text-align: center;
-      padding: 4rem 2rem;
-      font-size: 1.3rem;
-      font-style: italic;
-      color: rgba(232,224,212,0.4);
-      max-width: 600px;
-      margin: 0 auto;
+      font-size: 1.1rem; font-style: italic;
+      color: rgba(232,220,212,0.35);
+      max-width: 500px; margin: 0 auto;
+      font-family: 'JetBrains Mono', monospace;
     }
-    .quote strong { color: #c4a076; font-style: normal; }
-
-    footer {
-      text-align: center; padding: 3rem 2rem;
-      color: rgba(232,224,212,0.2);
-      font-size: 0.8rem;
-      border-top: 1px solid rgba(255,255,255,0.04);
+    .quote strong {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-style: normal;
+    }
+    .quote-author {
+      font-size: 0.75rem; color: rgba(232,220,212,0.2);
+      margin-top: 0.75rem; font-style: normal;
     }
 
+    /* ===== DIVIDER ===== */
     .divider {
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(196,160,118,0.15), transparent);
+      background: linear-gradient(90deg, transparent, rgba(220,38,38,0.12), transparent);
       max-width: 600px; margin: 0 auto;
     }
 
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center; padding: 3rem 2rem;
+      color: rgba(232,220,212,0.15);
+      font-size: 0.75rem;
+      border-top: 1px solid rgba(220,38,38,0.06);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
     @media (max-width: 600px) {
-      .stats { gap: 0.75rem; }
-      .stat { min-width: 80px; padding: 0.5rem 0.75rem; }
+      .stats { gap: 0.5rem; }
+      .stat { min-width: 75px; padding: 0.4rem 0.7rem; }
+      .stat .num { font-size: 1.1rem; }
       .xp-item { flex-direction: column; gap: 0.25rem; }
+      .section-header { flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
 
   <div class="hero">
+    <div class="hero-grid"></div>
     <div class="hero-bg-text">J.vps</div>
     <div class="hero-bg-text">DISCORD</div>
 
     <div class="hero-content">
-      <img class="avatar" src="https://cdn.discordapp.com/avatars/579358704789618747/3263780a55d96002abfcd17481e9abd4.png?size=256" alt="J.vps avatar">
-      <div class="badge">⏰ 24/7 Online</div>
-      <h1>J.<span>vps</span></h1>
+      <div class="avatar-wrap">
+        <img class="avatar" src="https://cdn.discordapp.com/avatars/579358704789618747/3263780a55d96002abfcd17481e9abd4.png?size=256" alt="J.vps">
+        <div class="status-dot"></div>
+      </div>
+
+      <div class="hero-badge">&gt;&gt; SYSTEM ONLINE // 24/7</div>
+      <h1>J.<span class="highlight">vps</span></h1>
       <p class="tagline">
-        <strong>Discord Professional</strong> · Programador · Gamer ·<br>
-        "Si no estoy en Discord, no existo"
+        &lt;<strong>Discord Professional</strong> /&gt; · Programador · Gamer<br>
+        <span style="opacity:0.6">/* "Si no estoy en Discord, no existo" */</span>
       </p>
 
       <div class="stats">
@@ -252,57 +419,66 @@
         <div class="stat"><div class="num">∞</div><div class="label">Mensajes/día</div></div>
         <div class="stat"><div class="num">0</div><div class="label">Toques pasto</div></div>
       </div>
-      <div style="margin-top:1.5rem; display:flex; align-items:center; gap:0.75rem; justify-content:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:0.6rem 1.25rem;">
-        <span style="font-size:1.2rem;">🆔</span>
-        <span style="color:rgba(232,224,212,0.5); font-size:0.85rem;">Discord ID:</span>
-        <span style="color:#c4a076; font-weight:700; font-size:0.85rem;">579358704789618747</span>
+
+      <div class="discord-id">
+        <span>🆔</span> DISCORD ID <code>579358704789618747</code>
       </div>
     </div>
-    <div class="hero-arrow">↓</div>
+
+    <div class="hero-arrow">// SCROLL ↓</div>
   </div>
 
   <section>
-    <h2 class="section-title"><span class="emoji">⚡</span> Habilidades</h2>
-    <div class="skills">
-      <div class="skill-card"><div class="icon">💬</div><h3>Discord Avanzado</h3><p>Especialista en enviar memes a las 3 AM. Manejo de 47 servidores simultáneamente sin perder un solo ping.</p></div>
-      <div class="skill-card"><div class="icon">⌨️</div><h3>Mecanografía Élite</h3><p>120 WPM insultando en juegos. Capacidad probada de escribir "gg ez" en 0.2 segundos.</p></div>
-      <div class="skill-card"><div class="icon">🐛</div><h3>Debugging</h3><p>Experto en comentar código y olvidar por qué. El 90% de mi tiempo es preguntarle a ChatGPT qué hice mal.</p></div>
-      <div class="skill-card"><div class="icon">🎯</div><h3>Procrastinación</h3><p>Cinta negra en dejar todo para después. "La voy a programar mañana" — J.vps, 2015-presente.</p></div>
-      <div class="skill-card"><div class="icon">☕</div><h3>Consumo de Café</h3><p>4 litros diarios. Mi sangre es 70% cafeína y 30% Discord.js. Palpitaciones incluidas.</p></div>
-      <div class="skill-card"><div class="icon">🎮</div><h3>Gaming</h3><p>Platino en todos los Souls. Gold en Valorant. Bronce en dejar el vicio. Estadísticas cuestionables.</p></div>
+    <div class="section-header">
+      <div class="section-tag">// SKILLS</div>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card"><div class="icon">💬</div><h3>Discord Avanzado</h3><p>47 servidores simultáneos. No duermo. Los pings me encuentran siempre.</p></div>
+      <div class="skill-card"><div class="icon">⌨️</div><h3>Mecanografía Élite</h3><p>120 WPM. "gg ez" en 0.2s. Más rápido que tu反应时间.</p></div>
+      <div class="skill-card"><div class="icon">🐛</div><h3>Debugging</h3><p>El 90% de mi tiempo es preguntarle a ChatGPT qué hice mal.</p></div>
+      <div class="skill-card"><div class="icon">🎯</div><h3>Procrastinación</h3><p>"La programo mañana" — J.vps, 2015–presente. Nunca es mañana.</p></div>
+      <div class="skill-card"><div class="icon">☕</div><h3>Café</h3><p>4L/día. Mi sangre es 70% cafeína, 30% Discord.js.</p></div>
+      <div class="skill-card"><div class="icon">🎮</div><h3>Gaming</h3><p>Platino en Souls. Gold en Valorant. Bronce en dejar el vicio.</p></div>
     </div>
   </section>
 
   <div class="divider"></div>
 
   <section>
-    <h2 class="section-title"><span class="emoji">💼</span> Experiencia Laboral</h2>
+    <div class="section-header">
+      <div class="section-tag">// EXPERIENCE</div>
+      <div class="section-line"></div>
+    </div>
     <div class="xp-list">
-      <div class="xp-item"><div class="year">2020–Act.</div><div class="xp-body"><h3>Senior Discord Moderator</h3><p>Moderación de 12 servidores. Especialista en resolver dramas a las 2 AM. "Warning y al carril".</p></div></div>
-      <div class="xp-item"><div class="year">2018–2020</div><div class="xp-body"><h3>Freelance Bot Developer</h3><p>Creé 34 bots de Discord. 2 siguen funcionando. El resto murió por APIs deprecated que nunca actualicé.</p></div></div>
-      <div class="xp-item"><div class="year">2015–2018</div><div class="xp-body"><h3>Professional Gamer</h3><p>Farmé horas en CS:GO, LoL y Warzone. K/D: irrelevante. Amistades: 0. Logros: todos los pases de batalla.</p></div></div>
-      <div class="xp-item"><div class="year">2010–2015</div><div class="xp-body"><h3>Aprendiz de Linux</h3><p>Instalé Arch. Lo usé 3 días. Volví a Windows. "El escritorio de Linux no es para mí, soy más de escritorio físico".</p></div></div>
+      <div class="xp-item"><div class="year">2020–Act.</div><div><h3>Senior Discord Moderator</h3><p>Moderación de 12 servidores. Resolución de dramas a las 2 AM. "Warning y al carril".</p></div></div>
+      <div class="xp-item"><div class="year">2018–2020</div><div><h3>Freelance Bot Developer</h3><p>34 bots creados. 2 siguen vivos. El resto murió por APIs deprecated que nunca actualicé.</p></div></div>
+      <div class="xp-item"><div class="year">2015–2018</div><div><h3>Professional Gamer</h3><p>Farmé horas en CS:GO, LoL y Warzone. Logros: todos los pases de batalla. Amistades: 0.</p></div></div>
+      <div class="xp-item"><div class="year">2010–2015</div><div><h3>Linux Adventurer</h3><p>Instalé Arch. Usé 3 días. Volví a Windows. El escritorio de Linux no es para mí.</p></div></div>
     </div>
   </section>
 
   <div class="divider"></div>
 
   <section>
-    <h2 class="section-title"><span class="emoji">🚀</span> Proyectos Destacados</h2>
-    <div class="projects">
+    <div class="section-header">
+      <div class="section-tag">// PROJECTS</div>
+      <div class="section-line"></div>
+    </div>
+    <div class="projects-grid">
       <div class="project">
         <div class="icon">🤖</div><h3>Bot Banhammer 3000</h3>
-        <p>Bot de Discord con 1 sola función: banear gente que usa emojis de TikTok. 0 descargas. 5 estrellas.</p>
+        <p>Bot con 1 función: banear gente que usa emojis de TikTok. 0 descargas. 5 estrellas.</p>
         <div class="tech"><span>Discord.js</span><span>Node</span><span>Odio</span></div>
       </div>
       <div class="project">
         <div class="icon">🌐</div><h3>jotademos</h3>
-        <p>Repositorio de demos que nadie pidió pero todos necesitan. Este mismo sitio. Meta.</p>
+        <p>Repositorio de demos que nadie pidió pero todos necesitan. Meta.</p>
         <div class="tech"><span>HTML</span><span>CSS</span><span>Copy-paste</span></div>
       </div>
       <div class="project">
         <div class="icon">📱</div><h3>App "Tocate el Pasto"</h3>
-        <p>App que te recuerda salir de la casa cada 6 horas. Desinstalada por 100% de los usuarios.</p>
+        <p>App que recuerda salir de casa cada 6h. Desinstalada por el 100% de usuarios.</p>
         <div class="tech"><span>React</span><span>Flutter</span><span>Fracaso</span></div>
       </div>
     </div>
@@ -311,12 +487,15 @@
   <div class="divider"></div>
 
   <section>
-    <h2 class="section-title"><span class="emoji">🎨</span> Demos</h2>
-    <div class="demos">
+    <div class="section-header">
+      <div class="section-tag">// DEMOS</div>
+      <div class="section-line"></div>
+    </div>
+    <div class="demos-grid">
       <a class="demo-card" href="perros-salchicha.html">
         <div class="preview">🐕</div>
         <h3>Perros Salchicha</h3>
-        <p>La raza más alargada del mundo</p>
+        <p>Dachshund · Teckel · Wiener Dog</p>
       </a>
       <a class="demo-card" href="#">
         <div class="preview">🚧</div>
@@ -326,14 +505,16 @@
     </div>
   </section>
 
-  <div class="quote">
-    "No es mucha, pero es <strong>trabajo honesto</strong>"<br>
-    <span style="font-size:0.9rem; display:block; margin-top:0.5rem;">— J.vps, 2026</span>
+  <div class="quote-section">
+    <div class="quote">
+      "No es mucha, pero es <strong>trabajo honesto</strong>"
+    </div>
+    <div class="quote-author">— J.vps, 2026</div>
   </div>
 
   <footer>
-    Hecho con 💻, ☕ y 0% de responsabilidad parental<br>
-    <span style="opacity:0.5; font-size:0.75rem;">© J.vps — Todos los derechos reservados (mentira, no sé reservar nada)</span>
+    > Hecho con 💻, ☕ y 0% de responsabilidad parental<br>
+    <span style="opacity:0.5;">© J.vps — Todos los derechos reservados (mentira, no sé reservar nada)</span>
   </footer>
 
 </body>
