@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pexels Video Downloader & Compressor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f0d0a; color: #e8e0d4;
+      line-height: 1.6; overflow-x: hidden;
+    }
+    ::selection { background: #c4a076; color: #0f0d0a; }
+
+    .header {
+      text-align: center; padding: 3rem 2rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, #1a1814 0%, #0f0d0a 100%);
+    }
+    .header h1 { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+    .header h1 span { color: #c4a076; }
+    .header p { color: rgba(232,224,212,0.4); font-size: 0.9rem; margin-top: 0.3rem; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+    .api-bar {
+      display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.5rem;
+    }
+    .api-bar label { font-size: 0.8rem; font-weight: 600; color: rgba(232,224,212,0.5); white-space: nowrap; }
+    .api-bar input {
+      flex: 1; min-width: 200px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; padding: 0.5rem 0.75rem; color: #e8e0d4; font-size: 0.8rem;
+      font-family: 'Inter', sans-serif; outline: none; transition: border 0.3s;
+    }
+    .api-bar input:focus { border-color: #c4a076; }
+
+    .search-box {
+      display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;
+    }
+    .search-box input {
+      flex: 1; min-width: 200px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 0.9rem 1.2rem; color: #fff; font-size: 1rem;
+      font-family: 'Inter', sans-serif; outline: none; transition: border 0.3s;
+    }
+    .search-box input:focus { border-color: #c4a076; }
+    .search-box input::placeholder { color: rgba(232,224,212,0.3); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.9rem 1.5rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem;
+      border: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+      font-family: 'Inter', sans-serif; text-decoration: none;
+    }
+    .btn-primary { background: #c4a076; color: #0f0d0a; }
+    .btn-primary:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(196,160,118,0.2); }
+    .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-secondary { background: rgba(255,255,255,0.06); color: #e8e0d4; border: 1px solid rgba(255,255,255,0.08); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    .btn-success { background: #22c55e; color: #0f0d0a; }
+    .btn-success:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(34,197,94,0.2); }
+
+    .btn-danger { background: #ef4444; color: #fff; }
+
+    .results-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .video-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; overflow: hidden; cursor: pointer;
+      transition: all 0.3s ease; position: relative;
+    }
+    .video-card:hover { transform: translateY(-4px); border-color: rgba(196,160,118,0.2); }
+    .video-card.selected { border-color: #c4a076; box-shadow: 0 0 20px rgba(196,160,118,0.15); }
+    .video-card .thumb {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
+      background: #1a1814;
+    }
+    .video-card .info { padding: 0.75rem 1rem; }
+    .video-card .info .dur {
+      font-size: 0.7rem; color: #c4a076; font-weight: 600;
+    }
+    .video-card .info .author {
+      font-size: 0.8rem; color: rgba(232,224,212,0.4); margin-top: 0.15rem;
+    }
+    .video-card .sel-badge {
+      position: absolute; top: 0.5rem; right: 0.5rem;
+      background: #c4a076; color: #0f0d0a; font-size: 0.7rem; font-weight: 700;
+      padding: 0.2rem 0.5rem; border-radius: 6px; opacity: 0; transition: opacity 0.3s;
+    }
+    .video-card.selected .sel-badge { opacity: 1; }
+
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      color: rgba(232,224,212,0.3);
+    }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 { color: rgba(232,224,212,0.5); font-weight: 600; font-size: 1.1rem; }
+    .empty-state p { font-size: 0.85rem; margin-top: 0.3rem; }
+
+    .panel {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .panel-title {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgba(232,224,212,0.4); margin-bottom: 1rem;
+    }
+
+    .selected-video {
+      display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap;
+    }
+    .selected-video video {
+      width: 280px; max-width: 100%; border-radius: 10px;
+      background: #1a1814;
+    }
+    .selected-video .meta { flex: 1; min-width: 200px; }
+    .selected-video .meta h3 { color: #fff; font-size: 1.1rem; font-weight: 700; }
+    .selected-video .meta p { color: rgba(232,224,212,0.4); font-size: 0.85rem; margin-top: 0.3rem; }
+
+    .quality-row {
+      display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem;
+    }
+    .quality-btn {
+      padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+      color: rgba(232,224,212,0.6); cursor: pointer; transition: all 0.3s;
+      font-family: 'Inter', sans-serif;
+    }
+    .quality-btn:hover { border-color: rgba(196,160,118,0.3); color: #e8e0d4; }
+    .quality-btn.active { border-color: #c4a076; background: rgba(196,160,118,0.1); color: #c4a076; }
+
+    /* Compression controls */
+    .compress-row {
+      display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 1rem;
+    }
+    .compress-row label { font-size: 0.85rem; color: rgba(232,224,212,0.6); }
+    .compress-row input[type="range"] {
+      flex: 1; min-width: 150px; accent-color: #c4a076;
+    }
+    .compress-row .val { font-size: 0.85rem; color: #c4a076; font-weight: 700; min-width: 3rem; }
+
+    /* Progress */
+    .progress-wrap { display: none; margin-top: 1rem; }
+    .progress-wrap.active { display: block; }
+    .progress-bar-bg {
+      width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; background: linear-gradient(90deg, #c4a076, #e8d5b7);
+      border-radius: 3px; transition: width 0.3s; width: 0%;
+    }
+    .progress-text { font-size: 0.8rem; color: rgba(232,224,212,0.4); margin-top: 0.5rem; text-align: center; }
+
+    .result-box { display: none; margin-top: 1rem; }
+    .result-box.active { display: block; }
+    .result-box video { width: 100%; max-width: 500px; border-radius: 10px; }
+    .result-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .result-stats .stat { text-align: center; }
+    .result-stats .stat .num { font-size: 1.2rem; font-weight: 800; color: #fff; }
+    .result-stats .stat .lbl { font-size: 0.7rem; color: rgba(232,224,212,0.4); text-transform: uppercase; }
+
+    .loader {
+      display: inline-block; width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,0.1); border-top-color: #c4a076;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 1rem 1.5rem; color: #fff; font-size: 0.85rem;
+      transform: translateY(100px); opacity: 0; transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+      z-index: 100;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { border-color: #ef4444; }
+
+    .spacer { height: 4rem; }
+
+    @media (max-width: 600px) {
+      .container { padding: 1rem; }
+      .results-grid { grid-template-columns: 1fr 1fr; }
+      .selected-video video { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Pexels <span>Downloader</span></h1>
+  <p>Buscá, descargá y comprimí videos desde Pexels</p>
+</div>
+
+<div class="container">
+
+  <!-- API KEY -->
+  <div class="api-bar">
+    <label>🔑 API Key</label>
+    <input id="apiKey" type="text" value="KuVrCXREbdo1VubY0AE4YfYKGGu8UunqpBWKy4xKTLHkbdZL2XShzbvI">
+    <button class="btn btn-secondary" onclick="saveKey()">Guardar</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-box">
+    <input id="searchInput" type="text" placeholder="Buscá videos… ej: dachshund, nature, city" onkeydown="if(event.key==='Enter') search()">
+    <button class="btn btn-primary" onclick="search()">🔍 Buscar</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" class="results-grid"></div>
+
+  <!-- SELECTED PANEL -->
+  <div id="panel" class="panel" style="display:none">
+    <div class="panel-title">🎬 Video seleccionado</div>
+    <div class="selected-video">
+      <video id="previewVideo" controls></video>
+      <div class="meta">
+        <h3 id="metaTitle">—</h3>
+        <p id="metaAuthor">—</p>
+        <div class="quality-row">
+          <span style="font-size:0.8rem;color:rgba(232,224,212,0.5)">Calidad:</span>
+          <button class="quality-btn active" data-quality="sd" onclick="setQuality('sd')">SD (480p)</button>
+          <button class="quality-btn" data-quality="hd" onclick="setQuality('hd')">HD (720p)</button>
+          <button class="quality-btn" data-quality="full_hd" onclick="setQuality('full_hd')">Full HD (1080p)</button>
+          <button class="quality-btn" data-quality="4k" onclick="setQuality('4k')">4K</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compression -->
+    <div style="margin-top:1.5rem; border-top:1px solid rgba(255,255,255,0.06); padding-top:1.5rem">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(232,224,212,0.4);margin-bottom:0.75rem">🗜️ Compresión</div>
+      <div class="compress-row">
+        <label>CRF (0=lossless · 51=peor)</label>
+        <input type="range" id="crfSlider" min="18" max="51" value="28" step="1" oninput="crfVal.textContent=this.value">
+        <span class="val" id="crfVal">28</span>
+      </div>
+      <div class="compress-row">
+        <button class="btn btn-primary" id="compressBtn" onclick="compress()">⚡ Comprimir</button>
+        <button class="btn btn-secondary" id="downloadRawBtn" onclick="downloadRaw()">⬇️ Descargar original</button>
+      </div>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">Iniciando...</div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-box" id="resultBox">
+      <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:1.5rem; margin-top:0.5rem">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(232,224,212,0.4);margin-bottom:0.75rem">✅ Resultado</div>
+        <video id="resultVideo" controls></video>
+        <div class="result-stats" id="resultStats"></div>
+        <button class="btn btn-success" id="downloadBtn" onclick="downloadResult()">⬇️ Descargar comprimido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading" class="empty-state" style="display:none">
+    <div class="loader" style="width:40px;height:40px;border-width:3px;margin:0 auto 1rem"></div>
+    <h3>Cargando videos...</h3>
+  </div>
+
+  <!-- Empty -->
+  <div id="empty" class="empty-state">
+    <div class="icon">🔍</div>
+    <h3>Buscá videos</h3>
+    <p>Escribí algo y presioná Enter</p>
+  </div>
+
+  <div class="spacer"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+// ===== FFmpeg.wasm =====
+let ffmpeg = null;
+let loaded = false;
+
+async function getFFmpeg() {
+  if (loaded) return ffmpeg;
+  const { FFmpeg } = await import('https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js');
+  const { toBlobURL } = await import('https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js');
+  ffmpeg = new FFmpeg();
+  
+  ffmpeg.on('progress', ({ progress }) => {
+    const pct = Math.min(progress * 100, 99);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `Comprimiendo... ${Math.round(pct)}%`;
+  });
+
+  ffmpeg.on('log', ({ message }) => {
+    if (message.includes('error')) console.error(message);
+  });
+
+  await ffmpeg.load({
+    coreURL: await toBlobURL('https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js', 'text/javascript'),
+    wasmURL: await toBlobURL('https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm', 'application/wasm'),
+  });
+  loaded = true;
+  return ffmpeg;
+}
+
+// ===== Global state =====
+let selectedVideo = null;
+let selectedQuality = 'sd';
+let compressedBlob = null;
+let originalBlob = null;
+
+const API_KEY = () => document.getElementById('apiKey').value.trim();
+
+// ===== Save Key =====
+window.saveKey = () => {
+  const k = API_KEY();
+  if (k) { showToast('🔑 API Key guardada'); localStorage.setItem('pexels_key', k) }
+};
+
+// Load saved key
+const savedKey = localStorage.getItem('pexels_key');
+if (savedKey) document.getElementById('apiKey').value = savedKey;
+
+// ===== Search =====
+window.search = async () => {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  const key = API_KEY();
+  if (!key) return showToast('⚠️ Poné tu API Key de Pexels', true);
+
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('panel').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('empty').style.display = 'none';
+
+  try {
+    const r = await fetch(`https://api.pexels.com/videos/search?query=${encodeURIComponent(q)}&per_page=18`, {
+      headers: { Authorization: key }
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    document.getElementById('loading').style.display = 'none';
+
+    if (!data.videos || data.videos.length === 0) {
+      document.getElementById('empty').style.display = 'block';
+      document.getElementById('empty').querySelector('h3').textContent = 'Sin resultados';
+      document.getElementById('empty').querySelector('p').textContent = 'Probá con otra búsqueda';
+      return;
+    }
+
+    renderResults(data.videos);
+  } catch (e) {
+    document.getElementById('loading').style.display = 'none';
+    showToast('❌ Error al buscar: ' + e.message, true);
+  }
+};
+
+function renderResults(videos) {
+  const grid = document.getElementById('results');
+  grid.innerHTML = videos.map(v => {
+    const thumb = v.image?.replace('h=630&w=1200', 'h=400&w=600') || '';
+    const min = Math.floor(v.duration / 60);
+    const sec = Math.floor(v.duration % 60);
+    return `
+      <div class="video-card" data-id="${v.id}" onclick="selectVideo(${v.id})">
+        <img class="thumb" src="${thumb}" alt="" loading="lazy">
+        <div class="info">
+          <div class="dur">${min}:${sec.toString().padStart(2,'0')}</div>
+          <div class="author">${v.user?.name || 'Anónimo'}</div>
+        </div>
+        <div class="sel-badge">Seleccionado</div>
+      </div>
+    `;
+  }).join('');
+  // Store videos data
+  grid._videos = videos;
+}
+
+// ===== Select Video =====
+window.selectVideo = async (id) => {
+  const grid = document.getElementById('results');
+  const videos = grid._videos;
+  const v = videos.find(x => x.id === id);
+  if (!v) return;
+
+  selectedVideo = v;
+  originalBlob = null;
+  compressedBlob = null;
+  document.getElementById('resultBox').classList.remove('active');
+
+  // Highlight
+  grid.querySelectorAll('.video-card').forEach(el => el.classList.remove('selected'));
+  grid.querySelector(`[data-id="${id}"]`)?.classList.add('selected');
+  grid.querySelector(`[data-id="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Show panel
+  document.getElementById('panel').style.display = 'block';
+  document.getElementById('metaTitle').textContent = `Video de ${v.user?.name || 'Anónimo'}`;
+  document.getElementById('metaAuthor').textContent = `${v.duration.toFixed(1)}s · ${v.width}×${v.height} · ID: ${v.id}`;
+
+  // Load preview (sd)
+  const sdFile = v.video_files?.find(f => f.quality === 'sd' && f.file_type === 'video/mp4');
+  if (sdFile) document.getElementById('previewVideo').src = sdFile.link;
+};
+
+// ===== Quality =====
+window.setQuality = (q) => {
+  selectedQuality = q;
+  document.querySelectorAll('.quality-btn').forEach(b => b.classList.toggle('active', b.dataset.quality === q));
+};
+
+// ===== Download Raw =====
+window.downloadRaw = async () => {
+  const v = selectedVideo;
+  if (!v) return;
+  const file = getQualityFile(v);
+  if (!file) return showToast('⚠️ Calidad no disponible', true);
+  showToast('⬇️ Descargando...');
+  window.open(file.link, '_blank');
+};
+
+function getQualityFile(v) {
+  const q = selectedQuality;
+  return v.video_files?.find(f => f.quality === q && f.file_type === 'video/mp4')
+      || v.video_files?.find(f => f.quality === q)
+      || v.video_files?.find(f => f.file_type === 'video/mp4');
+}
+
+// ===== Compress =====
+window.compress = async () => {
+  const v = selectedVideo;
+  if (!v) return;
+  const file = getQualityFile(v);
+  if (!file) return showToast('⚠️ No hay archivo disponible en esa calidad', true);
+
+  const btn = document.getElementById('compressBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Comprimiendo...';
+  document.getElementById('progressWrap').classList.add('active');
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressText').textContent = 'Descargando video...';
+
+  try {
+    // Download
+    const resp = await fetch(file.link);
+    if (!resp.ok) throw new Error('Error al descargar');
+    const blob = await resp.blob();
+    originalBlob = blob;
+    document.getElementById('progressText').textContent = 'Procesando con FFmpeg...';
+
+    // FFmpeg
+    const ff = await getFFmpeg();
+    const inputName = 'input' + (file.file_type === 'video/mp4' ? '.mp4' : '.mp4');
+    const outputName = 'output.mp4';
+    const crf = document.getElementById('crfSlider').value;
+
+    await ff.writeFile(inputName, new Uint8Array(await blob.arrayBuffer()));
+    document.getElementById('progressText').textContent = 'Comprimiendo...';
+
+    await ff.exec(['-i', inputName, '-vcodec', 'libx264', '-crf', crf, '-preset', 'medium', '-acodec', 'aac', '-b:a', '128k', '-y', outputName]);
+
+    const data = await ff.readFile(outputName);
+    compressedBlob = new Blob([data.buffer], { type: 'video/mp4' });
+
+    // Show result
+    const resultBox = document.getElementById('resultBox');
+    resultBox.classList.add('active');
+    const url = URL.createObjectURL(compressedBlob);
+    document.getElementById('resultVideo').src = url;
+
+    document.getElementById('resultStats').innerHTML = `
+      <div class="stat"><div class="num">${(blob.size / 1024 / 1024).toFixed(1)}MB</div><div class="lbl">Original</div></div>
+      <div class="stat"><div class="num" style="color:#22c55e">${(compressedBlob.size / 1024 / 1024).toFixed(1)}MB</div><div class="lbl">Comprimido</div></div>
+      <div class="stat"><div class="num" style="color:#c4a076">${Math.round((1 - compressedBlob.size / blob.size) * 100)}%</div><div class="lbl">Reducción</div></div>
+    `;
+
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressText').textContent = '✅ Listo!';
+    showToast('✅ Video comprimido exitosamente');
+  } catch (e) {
+    showToast('❌ Error: ' + e.message, true);
+    document.getElementById('progressText').textContent = '❌ Error';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '⚡ Comprimir';
+  }
+};
+
+// ===== Download Result =====
+window.downloadResult = () => {
+  if (!compressedBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(compressedBlob);
+  a.download = `comprimido-${selectedVideo?.id || 'video'}.mp4`;
+  a.click();
+  showToast('⬇️ Descargando comprimido');
+};
+
+// ===== Toast =====
+function showToast(msg, isError = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+window.showToast = showToast;
+
+console.log('🚀 Pexels Downloader listo');
+</script>
+</body>
+</html>
